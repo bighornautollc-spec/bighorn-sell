@@ -280,7 +280,7 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
           <div class="tchips" id="trimchips"></div>
           <input type="hidden" id="trim">
         </div>
-        <div id="confirmrow" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px">
+        <div id="confirmrow" hidden aria-hidden="true">
           <label class="check"><input type="checkbox" id="awd"> 4WD or AWD</label>
           <label class="check"><input type="checkbox" id="diesel"> Diesel engine</label>
         </div>
@@ -728,7 +728,7 @@ function renderTrimChips(model){
   $("trim").placeholder = chips.length ? "Or type it if it's not listed" : "XLT, Limited, LT…";
 }
 $("trim").addEventListener("input",()=>{ [...$("trimchips").children].forEach(c=>c.classList.remove("on")); });
-$("editveh").onclick=()=>{ $("manualfields").hidden=false; $("confirmrow").hidden=false; $("editveh").hidden=true; };
+$("editveh").onclick=()=>{ $("manualfields").hidden=false; $("editveh").hidden=true; };
 /* drivetrain hints readable straight from the VIN for common trucks */
 function offlineDrive(vin){
   if(/^1FT/.test(vin)){ if(vin[6]==="E") return true; if(vin[6]==="C") return false; }
@@ -805,7 +805,6 @@ function applyDecode(dec){
       +'<span class="spill ok">✓ VIN verified</span>';
     $("specrow").innerHTML=pills; $("specrow").hidden=false;
     $("vspec").textContent="";
-    if(dec.awd===true || dec.awd===false) $("confirmrow").hidden=true;
   }
 }
 let decodeSeq=0, lastVinDecoded="";
@@ -821,7 +820,7 @@ async function runVinDecode(){
     $("awd").checked=false; $("diesel").checked=false;
     delete el.dataset.engine; $("vspec").textContent="";
     $("specrow").hidden=true; $("specrow").innerHTML="";
-    $("confirmrow").hidden=false; $("vok").hidden=true;
+    $("vok").hidden=true;
   }
   const off=decodeVin(el.value)||{};
   const dg=offlineDrive(el.value); if(dg!==null) off.awd=dg;
@@ -833,7 +832,7 @@ async function runVinDecode(){
     if(!live.model && off.model) live.model=off.model;
     applyDecode(live);
   } else {
-    $("vspec").textContent = off.awd===true ? "Reads as 4WD — double-check below" : "";
+    $("vspec").textContent="";
   }
   if($("model").value && !$("miles").value) $("miles").focus();
 }
