@@ -108,6 +108,12 @@ fieldset legend{font:600 13px/1.3 Mulish; letter-spacing:.04em; text-transform:u
 .check{display:flex; align-items:center; gap:10px; border:1px solid var(--field-line); background:var(--field); border-radius:10px; padding:11px 12px; cursor:pointer; font-weight:500}
 .vcard{border:1px solid var(--chip-line); background:var(--chip-bg); border-radius:12px; padding:16px; margin-top:16px}
 .vhead{font:800 19px/1.3 "Mulish"; color:var(--head)}
+.vtop{display:flex; gap:11px; align-items:flex-start}
+.vok{flex:0 0 auto; width:26px; height:26px; border-radius:50%; background:var(--good); color:#fff; display:grid; place-items:center; margin-top:1px}
+.vok svg{width:14px; height:14px}
+.specrow{display:flex; flex-wrap:wrap; gap:7px; margin-top:9px}
+.spill{font:700 13px Mulish; padding:5px 11px; border-radius:999px; border:1px solid var(--field-line); background:var(--field); color:var(--head); white-space:nowrap}
+.spill.ok{background:var(--good-soft); border-color:var(--good); color:var(--good)}
 .tchips{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 10px}
 .tchip{font:600 13.5px Mulish; border:1px solid var(--field-line); background:var(--field); color:var(--ink); border-radius:999px; padding:7px 13px; cursor:pointer}
 .tchip.on{border-color:var(--brand); color:var(--brand); box-shadow:0 0 0 1px var(--brand) inset}
@@ -262,14 +268,19 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
       </div>
 
       <div class="vcard" id="vehcard" hidden>
-        <div class="vhead" id="vsummary"></div>
-        <div class="hint" id="vspec" style="margin-top:3px; font-weight:600"></div>
-        <div id="trimwrap" style="margin-top:10px">
-          <span class="lab">Which trim?</span>
-          <div class="tchips" id="trimchips"></div>
-          <input type="text" id="trim" placeholder="XLT, Limited, LT…" autocomplete="off">
+        <div class="vtop">
+          <span class="vok" id="vok" hidden aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>
+          <div style="min-width:0">
+            <div class="vhead" id="vsummary"></div>
+            <div class="specrow" id="specrow" hidden></div>
+            <div class="hint" id="vspec" style="margin-top:5px; font-weight:600"></div>
+          </div>
         </div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px">
+        <div hidden aria-hidden="true">
+          <div class="tchips" id="trimchips"></div>
+          <input type="hidden" id="trim">
+        </div>
+        <div id="confirmrow" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px">
           <label class="check"><input type="checkbox" id="awd"> 4WD or AWD</label>
           <label class="check"><input type="checkbox" id="diesel"> Diesel engine</label>
         </div>
@@ -283,7 +294,7 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
               <input type="text" id="model" placeholder="F-150, RAV4, Silverado…" autocomplete="off"></label>
           </div>
         </div>
-        <button class="btn-link" id="editveh" type="button" style="margin-top:8px; padding-left:0">Not your vehicle? Edit the details</button>
+        <button class="btn-link" id="editveh" type="button" style="margin-top:8px; padding-left:0">Not your vehicle? Edit</button>
       </div>
       <p class="err" id="e1">Please enter the 17-character VIN and your mileage.</p>
       <div class="nav"><span></span><button class="btn-brand" id="n1">Next: condition →</button></div>
@@ -717,7 +728,7 @@ function renderTrimChips(model){
   $("trim").placeholder = chips.length ? "Or type it if it's not listed" : "XLT, Limited, LT…";
 }
 $("trim").addEventListener("input",()=>{ [...$("trimchips").children].forEach(c=>c.classList.remove("on")); });
-$("editveh").onclick=()=>{ $("manualfields").hidden=false; $("trimwrap").hidden=false; $("editveh").hidden=true; };
+$("editveh").onclick=()=>{ $("manualfields").hidden=false; $("confirmrow").hidden=false; $("editveh").hidden=true; };
 /* drivetrain hints readable straight from the VIN for common trucks */
 function offlineDrive(vin){
   if(/^1FT/.test(vin)){ if(vin[6]==="E") return true; if(vin[6]==="C") return false; }
@@ -774,20 +785,28 @@ function applyDecode(dec){
   const mkShown = $("make").value==="Other"? dec.make : $("make").value;
   const parts=nameParts(dec.year||+$("year").value||"", mkShown||dec.make, $("model").value||dec.model);
   if($("model").value){
-    $("vsummary").textContent="✓ "+parts.join(" ")+(dec.trim? " "+dec.trim : "");
+    $("vsummary").textContent=parts.join(" ")+(dec.trim? " "+dec.trim : "");
+    $("vok").hidden=false;
     $("manualfields").hidden=true; $("editveh").hidden=false;
   } else if(parts.length){
-    $("vsummary").textContent="✓ "+parts.join(" ")+" — which model is it?";
+    $("vsummary").textContent=parts.join(" ")+" — which model is it?";
+    $("vok").hidden=true;
     $("manualfields").hidden=false; $("editveh").hidden=true;
     setTimeout(()=>$("model").focus(),50);
   } else {
-    $("vsummary").textContent="We couldn't read that VIN — fill in the vehicle below.";
+    $("vsummary").textContent="We couldn't read that VIN — enter the details below.";
+    $("vok").hidden=true;
     $("manualfields").hidden=false; $("editveh").hidden=true;
   }
-  renderTrimChips($("model").value);
-  if(dec.trim){ setTrim(dec.trim); $("trimwrap").hidden=true; }
-  const spec=[dec.engine, dec.driveLabel].filter(Boolean).join(" · ");
-  if(dec.live) $("vspec").textContent = spec? spec+" — verified from the federal VIN database" : "";
+  if(dec.trim) setTrim(dec.trim);
+  if(dec.live){
+    const pills=[dec.engine, dec.driveLabel].filter(Boolean)
+      .map(s=>'<span class="spill">'+s+'</span>').join("")
+      +'<span class="spill ok">✓ VIN verified</span>';
+    $("specrow").innerHTML=pills; $("specrow").hidden=false;
+    $("vspec").textContent="";
+    if(dec.awd===true || dec.awd===false) $("confirmrow").hidden=true;
+  }
 }
 let decodeSeq=0, lastVinDecoded="";
 async function runVinDecode(){
@@ -798,9 +817,11 @@ async function runVinDecode(){
     /* new vehicle — clear anything left over from the previous decode */
     lastVinDecoded=el.value;
     $("year").value=""; $("make").value=""; $("model").value="";
-    $("trim").value=""; renderTrimChips(""); $("trimwrap").hidden=false;
+    $("trim").value="";
     $("awd").checked=false; $("diesel").checked=false;
     delete el.dataset.engine; $("vspec").textContent="";
+    $("specrow").hidden=true; $("specrow").innerHTML="";
+    $("confirmrow").hidden=false; $("vok").hidden=true;
   }
   const off=decodeVin(el.value)||{};
   const dg=offlineDrive(el.value); if(dg!==null) off.awd=dg;
