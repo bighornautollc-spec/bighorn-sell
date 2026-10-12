@@ -789,11 +789,19 @@ function applyDecode(dec){
   const spec=[dec.engine, dec.driveLabel].filter(Boolean).join(" · ");
   if(dec.live) $("vspec").textContent = spec? spec+" — verified from the federal VIN database" : "";
 }
-let decodeSeq=0;
+let decodeSeq=0, lastVinDecoded="";
 async function runVinDecode(){
   const el=$("vin");
   if(el.value.length!==17 || !VIN_RE.test(el.value)){ $("vehcard").hidden=true; $("vinhint").hidden=false; return; }
   const seq=++decodeSeq;
+  if(el.value!==lastVinDecoded){
+    /* new vehicle — clear anything left over from the previous decode */
+    lastVinDecoded=el.value;
+    $("year").value=""; $("make").value=""; $("model").value="";
+    $("trim").value=""; renderTrimChips("");
+    $("awd").checked=false; $("diesel").checked=false;
+    delete el.dataset.engine; $("vspec").textContent="";
+  }
   const off=decodeVin(el.value)||{};
   const dg=offlineDrive(el.value); if(dg!==null) off.awd=dg;
   applyDecode(off);
