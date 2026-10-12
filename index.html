@@ -234,11 +234,11 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
 <main class="wrap" id="top">
   <div class="hero">
     <span class="eyebrow">Sell us your car</span>
-    <h1>Same-day cash offers from a real Billings dealership.</h1>
-    <p class="lede">Two minutes: your VIN, your miles, a few photos. Joseph prices it personally and you'll have a real cash offer the <b>same business day</b> — from a person at 24 Orchard Ln, not a call center.</p>
+    <h1>Same-day cash offers from a licensed Billings dealership.</h1>
+    <p class="lede">Enter your VIN and mileage, add a few photos, and our buying team will have a firm cash offer back to you the <b>same business day</b>. No appointment needed — and no obligation to accept.</p>
     <div class="chips">
       <span class="chip"><b>Same-day offers</b> — Mon–Fri</span>
-      <span class="chip"><b>A person prices it</b>, not a bot</span>
+      <span class="chip">Every vehicle <b>personally appraised</b></span>
       <span class="chip"><b>Paid same day</b> once we agree</span>
     </div>
   </div>
@@ -251,8 +251,8 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
 
     <!-- STEP 1 -->
     <div class="pane" id="p1">
-      <h2>VIN and miles — that's it</h2>
-      <p class="sub">Type the 17-character VIN and we'll identify your vehicle automatically.</p>
+      <h2>Start with your VIN</h2>
+      <p class="sub">Enter the 17-character VIN and your mileage — we'll identify your vehicle automatically.</p>
       <div class="grid">
         <label class="f full"><span class="lab">VIN</span>
           <input type="text" id="vin" maxlength="17" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="17 characters — we'll decode it as you type" style="text-transform:uppercase; font-family:ui-monospace, Menlo, Consolas, monospace; letter-spacing:.06em; font-size:18px; padding:13px 12px">
@@ -291,8 +291,8 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
 
     <!-- STEP 2: condition -->
     <div class="pane" id="p2" hidden>
-      <h2>How's it treating you?</h2>
-      <p class="sub">Honest answers get firm offers that don't change at the lot.</p>
+      <h2>Tell us about its condition</h2>
+      <p class="sub">Accurate answers let us make a firm offer the first time — one that doesn't change at the lot.</p>
       <fieldset><legend>Overall condition</legend>
         <div class="cards">
           <label class="card"><input type="radio" name="cond" value="excellent">
@@ -383,49 +383,49 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
           <input type="number" id="askprice" inputmode="numeric" min="0" placeholder="$ — helps us get you an answer faster"></label>
       </div>
       <p class="err" id="e3">We need at least a name and a phone number.</p>
-      <div class="nav"><button class="btn-link" id="b3">← Back</button><button class="btn-brand" id="n3">See my offer →</button></div>
+      <div class="nav"><button class="btn-link" id="b3">← Back</button><button class="btn-brand" id="n3">Review &amp; send →</button></div>
     </div>
 
     <!-- STEP 4 is the send screen (p5 below) -->
 
     <!-- STEP 4: send -->
     <div class="pane" id="p5" hidden>
-      <div class="okbanner" id="okb"><span>✓</span><span id="okmsg">Almost there — send this over with your photos and your same-day offer is on its way.</span></div>
-      <h2>Send it with photos, get your offer today</h2>
-      <p class="sub">Your vehicle sheet is ready below. Email or text it with a few photos — Joseph prices every vehicle personally, and offers go out the <b>same business day</b>.</p>
+      <div class="okbanner" id="okb"><span>✓</span><span id="okmsg">Your request is ready — send it with your photos to receive your same-day offer.</span></div>
+      <h2>Review and send your request</h2>
+      <p class="sub">Your vehicle summary is below. Email or text it with your photos — every vehicle is personally appraised, and offers go out the <b>same business day</b>.</p>
       <div class="sendbox">
         <div class="head">Your vehicle sheet · <span id="refshow" class="money"></span></div>
         <pre class="summary" id="summary"></pre>
       </div>
 
       <div class="vcard" style="margin-top:14px">
-        <div class="vhead" style="font-size:16.5px">Snap these 5 photos before you send</div>
+        <div class="vhead" style="font-size:16.5px">Include these five photos</div>
         <p class="hint" style="margin:8px 0 0; font-size:14px; line-height:1.7">
-          1 · Front corner (whole truck or car in frame)<br>
+          1 · Front corner (whole vehicle in frame)<br>
           2 · Rear corner<br>
           3 · Front seats &amp; dash from the door<br>
-          4 · Odometer with the vehicle on (shows your miles)<br>
-          5 · Any dents, dings, cracks or worn spots — honest pics mean a firm offer
+          4 · Odometer with the vehicle on (shows your mileage)<br>
+          5 · Any damage or wear — clear photos help us commit to a firm offer
         </p>
       </div>
 
       <div class="contactrow" style="margin-top:16px">
         <div>
           <a class="btn-brand btn-big" id="maillink" href="#" style="display:block; text-align:center; text-decoration:none; border-radius:10px">Email it to Bighorn →</a>
-          <p class="hint" style="margin-top:6px">Opens your email with everything filled in — <b>attach your photos</b>, hit send. Or send it yourself to
+          <p class="hint" style="margin-top:6px">Opens your email with everything filled in — <b>attach your photos</b> and send. Or send it yourself to
           <span style="font-weight:600; user-select:all">bighornautollc@gmail.com</span>
-          <button class="btn-link" id="copybtn" style="padding:0 4px">(copy sheet)</button><span class="copied" id="copied" hidden>Copied ✓</span></p>
+          <button class="btn-link" id="copybtn" style="padding:0 4px">(copy details)</button><span class="copied" id="copied" hidden>Copied ✓</span></p>
         </div>
         <div>
-          <span class="ctag">Rather text it?</span>
+          <span class="ctag">Prefer to text?</span>
           <div class="bigphone money">(406) 200-7546</div>
           <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px">
-            <a class="callbtn" id="smslink" href="#">Text it — attach pics to the text</a>
-            <a class="callbtn" href="tel:+14062007546">Call the lot</a>
+            <a class="callbtn" id="smslink" href="#">Text your request with photos</a>
+            <a class="callbtn" href="tel:+14062007546">Call us</a>
           </div>
         </div>
       </div>
-      <p class="hint" style="margin-top:14px">Sent during business hours (Mon–Fri 9–5)? Expect our offer the same day. After hours, it's priced first thing next morning.</p>
+      <p class="hint" style="margin-top:14px">Requests received during business hours (Mon–Fri, 9–5) are answered with an offer the same day. After-hours requests are answered first thing the next business morning.</p>
       <div class="nav" style="margin-top:18px"><button class="btn-link" id="restart">Send another vehicle</button><span></span></div>
     </div>
   </div>
@@ -445,17 +445,17 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
     <span class="eyebrow">How it works</span>
     <h2 style="font-size:24px; text-transform:uppercase">Three steps, one trip to the lot</h2>
     <div class="cols3">
-      <div class="stepcard"><span class="n">1</span><h3>Send it over</h3><p>VIN, miles and five quick phone photos. Two minutes, no login, no account.</p></div>
-      <div class="stepcard"><span class="n">2</span><h3>Offer same day</h3><p>Joseph prices it personally against live market data and texts or emails you a real number — same business day.</p></div>
-      <div class="stepcard"><span class="n">3</span><h3>Bring it by</h3><p>Quick look at 24 Orchard Ln, sign the title, drive home paid. Bring your title (or payoff info), ID and keys.</p></div>
+      <div class="stepcard"><span class="n">1</span><h3>Submit your vehicle</h3><p>Your VIN, mileage and five photos — about two minutes, no account required.</p></div>
+      <div class="stepcard"><span class="n">2</span><h3>Receive your offer</h3><p>Our buying team appraises every vehicle against current market data and sends you a firm number — same business day.</p></div>
+      <div class="stepcard"><span class="n">3</span><h3>Complete the sale</h3><p>A quick inspection at 24 Orchard Ln, sign the title, and leave with payment in hand. Bring your title (or payoff information), ID and keys.</p></div>
     </div>
   </section>
 
   <section class="info">
     <span class="eyebrow">Why Bighorn</span>
-    <h2 style="font-size:24px; text-transform:uppercase">A Billings lot, not an algorithm in another state</h2>
+    <h2 style="font-size:24px; text-transform:uppercase">A Billings dealership, not an out-of-state algorithm</h2>
     <div class="why">
-      <div><b>You keep driving it.</b><p>No shipping your car off and waiting on a check. We're ten minutes away.</p></div>
+      <div><b>You keep driving it.</b><p>No shipping your vehicle away and waiting on a check — we're right here in Billings.</p></div>
       <div><b>Same-day payment.</b><p>Once we agree and the paperwork's signed, you're paid — no "processing window."</p></div>
       <div><b>Payoffs handled.</b><p>Still making payments? We work with your lender and settle the loan directly.</p></div>
       <div><b>No obligation.</b><p>You don't have to buy anything from us. The offer is the offer.</p></div>
@@ -464,14 +464,14 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
 
   <section class="info">
     <span class="eyebrow">Questions</span>
-    <h2 style="font-size:24px; text-transform:uppercase">Fair questions, straight answers</h2>
+    <h2 style="font-size:24px; text-transform:uppercase">Frequently asked questions</h2>
     <div style="margin-top:8px">
-      <details><summary>How fast is "same day"?</summary><p>Send your vehicle during lot hours (Mon–Fri, 9–5) and you'll usually have our offer back within a few hours — same business day, every time. Send it at night or on a weekend and it's priced first thing the next business morning.</p></details>
-      <details><summary>Who comes up with the number?</summary><p>Joseph does — personally, for every single vehicle, using current market data and what's actually selling here in Montana. No algorithm, no auto-generated lowball. If you've got a number in mind, put it in the form and he'll shoot straight with you about it.</p></details>
-      <details><summary>Why do you want photos?</summary><p>Five quick phone pics — the outside corners, the interior, the odometer, and any dings — let us give you a firm number instead of a "maybe, come in first." Honest photos get honest offers that don't change when you show up.</p></details>
+      <details><summary>How fast is "same day"?</summary><p>Submit your vehicle during business hours (Mon–Fri, 9–5) and you'll usually have our offer within a few hours — same business day. Requests received after hours are answered first thing the next business morning.</p></details>
+      <details><summary>Who determines the offer?</summary><p>Every vehicle is appraised personally by our buying team using current market data and actual Montana sale prices — no automated estimates. If you have a number in mind, include it in the form and we'll address it directly.</p></details>
+      <details><summary>Why do you ask for photos?</summary><p>Five quick photos — the exterior corners, the interior, the odometer, and any damage — let us commit to a firm number up front, so the offer you receive is the offer you're paid when you arrive.</p></details>
       <details><summary>Do I have to buy a car from you?</summary><p>No. We buy vehicles outright. If you'd rather trade toward something on our lot, that works too — same offer either way.</p></details>
       <details><summary>What do I bring to the lot?</summary><p>The title (or your loan payoff information), a photo ID, and all the keys. If a lender holds the title, bring your account details and we'll handle the payoff.</p></details>
-      <details><summary>My car doesn't run — will you still buy it?</summary><p>Usually, yes. Send the details through the form and note that it doesn't run; we'll get back to you with what we can do.</p></details>
+      <details><summary>My car doesn't run — will you still buy it?</summary><p>In most cases, yes. Submit the details through the form and note that it doesn't run — we'll respond with what we can offer.</p></details>
     </div>
   </section>
 </main>
@@ -621,7 +621,7 @@ function ls(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localSt
 // wizard nav
 let step=1, ref=null;
 const panes={1:"p1",2:"p2",3:"p2b",4:"p3",5:"p5"};
-const STEP_NAMES={1:"Your vehicle",2:"Condition",3:"Features",4:"Contact",5:"Send it"};
+const STEP_NAMES={1:"Your vehicle",2:"Condition",3:"Features",4:"Contact",5:"Review & send"};
 function show(n){
   step=n;
   Object.entries(panes).forEach(([k,id])=>$(id).hidden=(+k!==n));
@@ -717,7 +717,7 @@ function renderTrimChips(model){
   $("trim").placeholder = chips.length ? "Or type it if it's not listed" : "XLT, Limited, LT…";
 }
 $("trim").addEventListener("input",()=>{ [...$("trimchips").children].forEach(c=>c.classList.remove("on")); });
-$("editveh").onclick=()=>{ $("manualfields").hidden=false; $("editveh").hidden=true; };
+$("editveh").onclick=()=>{ $("manualfields").hidden=false; $("trimwrap").hidden=false; $("editveh").hidden=true; };
 /* drivetrain hints readable straight from the VIN for common trucks */
 function offlineDrive(vin){
   if(/^1FT/.test(vin)){ if(vin[6]==="E") return true; if(vin[6]==="C") return false; }
@@ -774,7 +774,7 @@ function applyDecode(dec){
   const mkShown = $("make").value==="Other"? dec.make : $("make").value;
   const parts=nameParts(dec.year||+$("year").value||"", mkShown||dec.make, $("model").value||dec.model);
   if($("model").value){
-    $("vsummary").textContent="✓ "+parts.join(" ");
+    $("vsummary").textContent="✓ "+parts.join(" ")+(dec.trim? " "+dec.trim : "");
     $("manualfields").hidden=true; $("editveh").hidden=false;
   } else if(parts.length){
     $("vsummary").textContent="✓ "+parts.join(" ")+" — which model is it?";
@@ -785,7 +785,7 @@ function applyDecode(dec){
     $("manualfields").hidden=false; $("editveh").hidden=true;
   }
   renderTrimChips($("model").value);
-  if(dec.trim) setTrim(dec.trim);
+  if(dec.trim){ setTrim(dec.trim); $("trimwrap").hidden=true; }
   const spec=[dec.engine, dec.driveLabel].filter(Boolean).join(" · ");
   if(dec.live) $("vspec").textContent = spec? spec+" — verified from the federal VIN database" : "";
 }
@@ -798,7 +798,7 @@ async function runVinDecode(){
     /* new vehicle — clear anything left over from the previous decode */
     lastVinDecoded=el.value;
     $("year").value=""; $("make").value=""; $("model").value="";
-    $("trim").value=""; renderTrimChips("");
+    $("trim").value=""; renderTrimChips(""); $("trimwrap").hidden=false;
     $("awd").checked=false; $("diesel").checked=false;
     delete el.dataset.engine; $("vspec").textContent="";
   }
@@ -881,7 +881,7 @@ function toSend(){
   const enc=encodeURIComponent(sheet);
   $("smslink").href="sms:+14062007546?&body="+enc;
   $("maillink").href="mailto:bighornautollc@gmail.com?subject="+encodeURIComponent("Same-day offer request "+ref+" — "+vehStr())
-    +"&body="+encodeURIComponent(sheet+"\n\n>> Attach 4-6 photos before sending <<");
+    +"&body="+encodeURIComponent(sheet+"\n\nPlease attach 4-6 photos before sending.");
   show(5);
 }
 $("copybtn").onclick=async()=>{
