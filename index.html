@@ -436,23 +436,29 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
           <input type="number" id="askprice" inputmode="numeric" min="0" placeholder="$ — helps us get you an answer faster"></label>
       </div>
       <p class="err" id="e3">We need at least a name and a phone number.</p>
-      <div class="vcard" id="sendfail" hidden style="margin-top:14px">
-        <div class="vhead" style="font-size:15.5px">We couldn't send it automatically</div>
-        <p class="hint" style="margin:7px 0 0; font-size:14px">No problem — send it yourself and attach your photos:</p>
-        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
-          <a class="callbtn" id="maillink" href="#">Email it to Bighorn</a>
-          <a class="callbtn" id="smslink" href="#">Text it: (406) 200-7546</a>
-        </div>
+      <div class="nav"><button class="btn-link" id="b3">← Back</button><button class="btn-brand" id="n3">Next: send it →</button></div>
+    </div>
+
+    <!-- STEP 5b: send -->
+    <div class="pane" id="p4s" hidden>
+      <h2>One tap to send</h2>
+      <p class="sub">Everything's filled in — pick how you want to send it.</p>
+      <div style="display:flex; flex-direction:column; gap:10px; max-width:440px">
+        <button type="button" class="btn-brand btn-big" id="sharebtn" hidden>Share it — photos attached</button>
+        <a class="btn-brand btn-big" id="maillink" href="#" style="display:block; text-align:center; text-decoration:none; border-radius:10px">Email it to Bighorn</a>
+        <a class="callbtn" id="smslink" href="#" style="text-align:center">Text it to (406) 200-7546</a>
       </div>
-      <div class="nav"><button class="btn-link" id="b3">← Back</button><button class="btn-brand" id="n3">Send my request →</button></div>
+      <p class="hint" style="margin-top:12px">Your email or messaging app will open with everything filled in — <b>attach the photos you just took</b>, then press send. Sending to
+        <span style="font-weight:600; user-select:all">bighornautollc@gmail.com</span>.</p>
+      <div class="nav"><button class="btn-link" id="bS">← Back</button><span></span></div>
     </div>
 
     <!-- FINAL: thank you -->
     <div class="pane" id="p5" hidden>
       <div class="thanks">
         <span class="vok big" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>
-        <h2>Thank you — your request is in.</h2>
-        <p class="sub" style="max-width:54ch; margin-inline:auto">We've received your vehicle details and photos. Our buying team will review them and get back to you with your cash offer the <b>same business day</b>. Requests received after hours are answered first thing the next business morning.</p>
+        <h2>Thank you — one last tap.</h2>
+        <p class="sub" style="max-width:54ch; margin-inline:auto">Your message just opened with everything filled in — <b>make sure your photos are attached, then press send</b>. Once it's sent, our buying team will get back to you with your cash offer the <b>same business day</b>. After-hours requests are answered first thing the next business morning.</p>
         <p class="hint" style="margin-top:12px">Reference <span id="refshow" class="money"></span></p>
         <p class="hint" style="margin-top:4px">Questions in the meantime? Call <a href="tel:+14062007546" style="font-weight:700; color:inherit">(406) 200-7546</a> · Mon–Fri 9–5</p>
       </div>
@@ -656,7 +662,7 @@ const STEP_NAMES={1:"Your vehicle",2:"Condition",3:"Features",4:"Photos",5:"Cont
 function show(n){
   step=n;
   Object.entries(panes).forEach(([k,id])=>$(id).hidden=(+k!==n));
-  $("p5").hidden=true;
+  $("p5").hidden=true; $("p4s").hidden=true;
   $("pfill").style.width=(n*20)+"%";
   $("plabel").textContent="Step "+n+" of 5 · "+STEP_NAMES[n];
   if(n>1){
@@ -928,7 +934,7 @@ async function shrink(file){
   return blob;
 }
 
-/* ---- submit (standard form post so photos ride along as attachments) ---- */
+/* ---- send: the customer's own email or text carries the photos — no services in between ---- */
 $("n3").onclick=()=>{
   const d=data();
   const digits=(d.phone.match(/\d/g)||[]).length;
@@ -936,64 +942,58 @@ $("n3").onclick=()=>{
   $("e3").classList.toggle("show",!ok);
   if(!ok) return;
   ref = ref || ("BH-" + Math.random().toString(36).slice(2,6).toUpperCase());
-  try{
-    nativeSubmit();
-  }catch(e){
-    prepFallback();
-    $("sendfail").hidden=false;
-    $("sendfail").scrollIntoView({behavior:"smooth",block:"center"});
-  }
+  prepLinks();
+  showSend();
 };
-function nativeSubmit(){
-  const d=data(), sheet=buildSheet();
-  const f=document.createElement("form");
-  f.method="POST"; f.enctype="multipart/form-data"; f.acceptCharset="UTF-8";
-  f.action="https://formsubmit.co/bighornautollc@gmail.com"; f.style.display="none";
-  const add=(n,v)=>{ const i=document.createElement("input"); i.type="hidden"; i.name=n; i.value=v; f.appendChild(i); };
-  add("_subject","Same-day offer request "+ref+" — "+vehStr());
-  add("_template","box");
-  add("_captcha","false");
-  add("_next", location.origin+location.pathname+"?sent="+encodeURIComponent(ref));
-  add("name", d.name);
-  if(d.email) add("email", d.email);
-  add("phone", d.phone);
-  add("request", sheet);
-  photos.forEach((p,i)=>{
-    const fi=document.createElement("input"); fi.type="file"; fi.name="attachment"+(i+1); fi.hidden=true;
-    const dt=new DataTransfer();
-    dt.items.add(new File([p.blob], "photo-"+(i+1)+".jpg", {type:p.blob.type||"image/jpeg"}));
-    fi.files=dt.files; f.appendChild(fi);
-  });
-  document.body.appendChild(f);
-  const btn=$("n3"); btn.textContent="Sending…"; btn.disabled=true; $("p3").classList.add("sending");
-  f.submit();
-}
-function prepFallback(){
+$("bS").onclick=()=>show(5);
+function prepLinks(){
   const sheet=buildSheet();
   $("smslink").href="sms:+14062007546?&body="+encodeURIComponent(sheet);
   $("maillink").href="mailto:bighornautollc@gmail.com?subject="+encodeURIComponent("Same-day offer request "+ref+" — "+vehStr())
-    +"&body="+encodeURIComponent(sheet+"\n\nPlease attach 4-6 photos before sending.");
+    +"&body="+encodeURIComponent(sheet+"\n\nPlease attach your 4-6 photos before sending.");
+  let files=[];
+  try{ files=photos.map((p,i)=>new File([p.blob],"photo-"+(i+1)+".jpg",{type:p.blob.type||"image/jpeg"})); }catch(e){}
+  const can = files.length>0 && !!navigator.canShare && navigator.canShare({files});
+  $("sharebtn").hidden=!can;
+  $("sharebtn").onclick=async()=>{
+    try{
+      await navigator.share({ files, title:"Same-day offer request "+ref,
+        text:"To: bighornautollc@gmail.com\n\n"+sheet });
+      afterSendTap(true);
+    }catch(e){ /* share sheet closed — stay here */ }
+  };
 }
+function showSend(){
+  step=6;
+  Object.values(panes).forEach(id=>$(id).hidden=true);
+  $("p5").hidden=true; $("p4s").hidden=false;
+  $("pfill").style.width="100%";
+  $("plabel").textContent="Send it";
+  $("wizard").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function afterSendTap(shared){
+  setTimeout(()=>{
+    if(shared){
+      const s=document.querySelector("#p5 .sub");
+      if(s) s.innerHTML="Your photos and details are on their way. Our buying team will get back to you with your cash offer the <b>same business day</b>. After-hours requests are answered first thing the next business morning.";
+    }
+    showThanks();
+  }, 900);
+}
+$("maillink").addEventListener("click",()=>afterSendTap(false));
+$("smslink").addEventListener("click",()=>afterSendTap(false));
 function showThanks(){
   step=6;
   Object.values(panes).forEach(id=>$(id).hidden=true);
+  $("p4s").hidden=true;
   $("p5").hidden=false;
+  $("refshow").textContent=ref||"";
   $("pfill").style.width="100%";
   $("plabel").textContent="Request sent";
   $("vehecho").textContent="";
+  try{ ls("bh_draft","{}"); }catch(e){}
   $("wizard").scrollIntoView({behavior:"smooth",block:"start"});
 }
-/* returning from the form service redirect → thank-you screen */
-try{
-  const sref=new URLSearchParams(location.search).get("sent");
-  if(sref && /^BH-[A-Z0-9]{3,6}$/i.test(sref)){
-    ref=sref.toUpperCase();
-    $("refshow").textContent=ref;
-    ls("bh_draft","{}");
-    showThanks();
-    history.replaceState(null,"",location.pathname);
-  }
-}catch(e){}
 
 const COND_LABEL={excellent:"Excellent",good:"Good",fair:"Fair",rough:"Rough"};
 const TITLE_LABEL={clean:"Clean title",loan:"Loan/lease payoff",salvage:"Rebuilt/salvage title"};
@@ -1026,7 +1026,7 @@ function buildSheet(){
 $("restart").onclick=()=>{
   $("askprice").value="";
   photos.forEach(p=>URL.revokeObjectURL(p.url)); photos.length=0; renderThumbs();
-  $("sendfail").hidden=true; ref=null;
+  ref=null;
   show(1);
 };
 
