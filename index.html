@@ -928,46 +928,45 @@ async function shrink(file){
   return blob;
 }
 
-/* ---- submit ---- */
-$("n3").onclick=async()=>{
+/* ---- submit (standard form post so photos ride along as attachments) ---- */
+$("n3").onclick=()=>{
   const d=data();
   const digits=(d.phone.match(/\d/g)||[]).length;
   const ok = d.name && digits>=7;
   $("e3").classList.toggle("show",!ok);
   if(!ok) return;
   ref = ref || ("BH-" + Math.random().toString(36).slice(2,6).toUpperCase());
-  const btn=$("n3"), old=btn.textContent;
-  btn.textContent="Sending…"; btn.disabled=true; $("p3").classList.add("sending");
-  const sent=await submitRequest();
-  btn.textContent=old; btn.disabled=false; $("p3").classList.remove("sending");
-  if(sent){
-    $("refshow").textContent=ref; $("sendfail").hidden=true;
-    showThanks();
-  } else {
+  try{
+    nativeSubmit();
+  }catch(e){
     prepFallback();
     $("sendfail").hidden=false;
     $("sendfail").scrollIntoView({behavior:"smooth",block:"center"});
   }
 };
-async function submitRequest(){
-  try{
-    const d=data(), sheet=buildSheet();
-    const fd=new FormData();
-    fd.append("_subject","Same-day offer request "+ref+" — "+vehStr());
-    fd.append("_template","box");
-    fd.append("_captcha","false");
-    fd.append("name", d.name);
-    if(d.email) fd.append("email", d.email);
-    fd.append("phone", d.phone);
-    fd.append("request", sheet);
-    photos.forEach((p,i)=>fd.append("attachment"+(i+1), p.blob, "photo-"+(i+1)+".jpg"));
-    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),45000);
-    const r=await fetch("https://formsubmit.co/ajax/bighornautollc@gmail.com",{method:"POST", body:fd, headers:{Accept:"application/json"}, signal:ctl.signal});
-    clearTimeout(t);
-    if(!r.ok) return false;
-    const j=await r.json().catch(()=>null);
-    return !!(j && (j.success===true || j.success==="true"));
-  }catch(e){ return false; }
+function nativeSubmit(){
+  const d=data(), sheet=buildSheet();
+  const f=document.createElement("form");
+  f.method="POST"; f.enctype="multipart/form-data"; f.acceptCharset="UTF-8";
+  f.action="https://formsubmit.co/bighornautollc@gmail.com"; f.style.display="none";
+  const add=(n,v)=>{ const i=document.createElement("input"); i.type="hidden"; i.name=n; i.value=v; f.appendChild(i); };
+  add("_subject","Same-day offer request "+ref+" — "+vehStr());
+  add("_template","box");
+  add("_captcha","false");
+  add("_next", location.origin+location.pathname+"?sent="+encodeURIComponent(ref));
+  add("name", d.name);
+  if(d.email) add("email", d.email);
+  add("phone", d.phone);
+  add("request", sheet);
+  photos.forEach((p,i)=>{
+    const fi=document.createElement("input"); fi.type="file"; fi.name="attachment"+(i+1); fi.hidden=true;
+    const dt=new DataTransfer();
+    dt.items.add(new File([p.blob], "photo-"+(i+1)+".jpg", {type:p.blob.type||"image/jpeg"}));
+    fi.files=dt.files; f.appendChild(fi);
+  });
+  document.body.appendChild(f);
+  const btn=$("n3"); btn.textContent="Sending…"; btn.disabled=true; $("p3").classList.add("sending");
+  f.submit();
 }
 function prepFallback(){
   const sheet=buildSheet();
@@ -984,6 +983,17 @@ function showThanks(){
   $("vehecho").textContent="";
   $("wizard").scrollIntoView({behavior:"smooth",block:"start"});
 }
+/* returning from the form service redirect → thank-you screen */
+try{
+  const sref=new URLSearchParams(location.search).get("sent");
+  if(sref && /^BH-[A-Z0-9]{3,6}$/i.test(sref)){
+    ref=sref.toUpperCase();
+    $("refshow").textContent=ref;
+    ls("bh_draft","{}");
+    showThanks();
+    history.replaceState(null,"",location.pathname);
+  }
+}catch(e){}
 
 const COND_LABEL={excellent:"Excellent",good:"Good",fair:"Fair",rough:"Rough"};
 const TITLE_LABEL={clean:"Clean title",loan:"Loan/lease payoff",salvage:"Rebuilt/salvage title"};
