@@ -114,6 +114,19 @@ fieldset legend{font:600 13px/1.3 Mulish; letter-spacing:.04em; text-transform:u
 .specrow{display:flex; flex-wrap:wrap; gap:7px; margin-top:9px}
 .spill{font:700 13px Mulish; padding:5px 11px; border-radius:999px; border:1px solid var(--field-line); background:var(--field); color:var(--head); white-space:nowrap}
 .spill.ok{background:var(--good-soft); border-color:var(--good); color:var(--good)}
+.photobtns{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px}
+.photobtn{display:flex; align-items:center; justify-content:center; gap:9px; flex:1 1 220px; border-radius:10px}
+.photobtn svg{width:21px; height:21px; flex:0 0 auto}
+.photobtn.alt{background:var(--field); color:var(--head); border:1px solid var(--field-line)}
+.thumbs{display:grid; grid-template-columns:repeat(auto-fill,minmax(92px,1fr)); gap:9px; margin-top:14px}
+.thumbs:empty{margin-top:0}
+.thumb{position:relative; aspect-ratio:1; border-radius:10px; overflow:hidden; border:1px solid var(--field-line); background:var(--field)}
+.thumb img{width:100%; height:100%; object-fit:cover; display:block}
+.thumb button{position:absolute; top:5px; right:5px; width:24px; height:24px; border-radius:50%; border:none; background:rgba(10,20,29,.72); color:#fff; font-size:15px; line-height:1; cursor:pointer; display:grid; place-items:center}
+.vok.big{width:52px; height:52px; margin:0 auto 14px}
+.vok.big svg{width:26px; height:26px}
+.thanks{text-align:center; padding:18px 6px 4px}
+.sending{opacity:.6; pointer-events:none}
 .tchips{display:flex; flex-wrap:wrap; gap:8px; margin:8px 0 10px}
 .tchip{font:600 13.5px Mulish; border:1px solid var(--field-line); background:var(--field); color:var(--ink); border-radius:999px; padding:7px 13px; cursor:pointer}
 .tchip.on{border-color:var(--brand); color:var(--brand); box-shadow:0 0 0 1px var(--brand) inset}
@@ -370,10 +383,39 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
       </div>
       <label class="f" style="margin-top:18px"><span class="lab">Anything else we should know? <span style="text-transform:none;letter-spacing:0">(optional)</span></span>
         <textarea id="notes" placeholder="New tires in May, replaced windshield, recent service, second set of wheels…"></textarea></label>
-      <div class="nav"><button class="btn-link" id="bF">← Back</button><button class="btn-brand" id="nF">Next: contact →</button></div>
+      <div class="nav"><button class="btn-link" id="bF">← Back</button><button class="btn-brand" id="nF">Next: photos →</button></div>
     </div>
 
     <!-- STEP 3 -->
+    <!-- STEP 4: photos -->
+    <div class="pane" id="pphotos" hidden>
+      <h2>Add your photos</h2>
+      <p class="sub">Four to six photos is perfect — they're what lets us put a real number on your vehicle.</p>
+      <div class="photobtns">
+        <button type="button" class="btn-brand btn-big photobtn" id="snapbtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          Take a photo</button>
+        <button type="button" class="btn-brand btn-big photobtn alt" id="pickbtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          Upload photos</button>
+      </div>
+      <input type="file" id="camin" accept="image/*" capture="environment" hidden>
+      <input type="file" id="galin" accept="image/*" multiple hidden>
+      <div class="thumbs" id="thumbs"></div>
+      <div class="vcard" style="margin-top:14px">
+        <div class="vhead" style="font-size:15.5px">What to photograph</div>
+        <p class="hint" style="margin:7px 0 0; font-size:14px; line-height:1.7">
+          1 · Front corner (whole vehicle in frame)<br>
+          2 · Rear corner<br>
+          3 · Front seats &amp; dash from the door<br>
+          4 · Odometer with the vehicle on<br>
+          5 · Any damage or wear
+        </p>
+      </div>
+      <p class="err" id="eP">Please add at least one photo — it's how we price your vehicle.</p>
+      <div class="nav"><button class="btn-link" id="bP">← Back</button><button class="btn-brand" id="nP">Next: contact →</button></div>
+    </div>
+
     <div class="pane" id="p3" hidden>
       <h2>Where do we send your offer?</h2>
       <p class="sub">Only used to send your offer — no spam, no lists, ever.</p>
@@ -394,50 +436,27 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
           <input type="number" id="askprice" inputmode="numeric" min="0" placeholder="$ — helps us get you an answer faster"></label>
       </div>
       <p class="err" id="e3">We need at least a name and a phone number.</p>
-      <div class="nav"><button class="btn-link" id="b3">← Back</button><button class="btn-brand" id="n3">Review &amp; send →</button></div>
+      <div class="vcard" id="sendfail" hidden style="margin-top:14px">
+        <div class="vhead" style="font-size:15.5px">We couldn't send it automatically</div>
+        <p class="hint" style="margin:7px 0 0; font-size:14px">No problem — send it yourself and attach your photos:</p>
+        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
+          <a class="callbtn" id="maillink" href="#">Email it to Bighorn</a>
+          <a class="callbtn" id="smslink" href="#">Text it: (406) 200-7546</a>
+        </div>
+      </div>
+      <div class="nav"><button class="btn-link" id="b3">← Back</button><button class="btn-brand" id="n3">Send my request →</button></div>
     </div>
 
-    <!-- STEP 4 is the send screen (p5 below) -->
-
-    <!-- STEP 4: send -->
+    <!-- FINAL: thank you -->
     <div class="pane" id="p5" hidden>
-      <div class="okbanner" id="okb"><span>✓</span><span id="okmsg">Your request is ready — send it with your photos to receive your same-day offer.</span></div>
-      <h2>Review and send your request</h2>
-      <p class="sub">Your vehicle summary is below. Email or text it with your photos — every vehicle is personally appraised, and offers go out the <b>same business day</b>.</p>
-      <div class="sendbox">
-        <div class="head">Your vehicle sheet · <span id="refshow" class="money"></span></div>
-        <pre class="summary" id="summary"></pre>
+      <div class="thanks">
+        <span class="vok big" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>
+        <h2>Thank you — your request is in.</h2>
+        <p class="sub" style="max-width:54ch; margin-inline:auto">We've received your vehicle details and photos. Our buying team will review them and get back to you with your cash offer the <b>same business day</b>. Requests received after hours are answered first thing the next business morning.</p>
+        <p class="hint" style="margin-top:12px">Reference <span id="refshow" class="money"></span></p>
+        <p class="hint" style="margin-top:4px">Questions in the meantime? Call <a href="tel:+14062007546" style="font-weight:700; color:inherit">(406) 200-7546</a> · Mon–Fri 9–5</p>
       </div>
-
-      <div class="vcard" style="margin-top:14px">
-        <div class="vhead" style="font-size:16.5px">Include these five photos</div>
-        <p class="hint" style="margin:8px 0 0; font-size:14px; line-height:1.7">
-          1 · Front corner (whole vehicle in frame)<br>
-          2 · Rear corner<br>
-          3 · Front seats &amp; dash from the door<br>
-          4 · Odometer with the vehicle on (shows your mileage)<br>
-          5 · Any damage or wear — clear photos help us price your vehicle accurately
-        </p>
-      </div>
-
-      <div class="contactrow" style="margin-top:16px">
-        <div>
-          <a class="btn-brand btn-big" id="maillink" href="#" style="display:block; text-align:center; text-decoration:none; border-radius:10px">Email it to Bighorn →</a>
-          <p class="hint" style="margin-top:6px">Opens your email with everything filled in — <b>attach your photos</b> and send. Or send it yourself to
-          <span style="font-weight:600; user-select:all">bighornautollc@gmail.com</span>
-          <button class="btn-link" id="copybtn" style="padding:0 4px">(copy details)</button><span class="copied" id="copied" hidden>Copied ✓</span></p>
-        </div>
-        <div>
-          <span class="ctag">Prefer to text?</span>
-          <div class="bigphone money">(406) 200-7546</div>
-          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:8px">
-            <a class="callbtn" id="smslink" href="#">Text your request with photos</a>
-            <a class="callbtn" href="tel:+14062007546">Call us</a>
-          </div>
-        </div>
-      </div>
-      <p class="hint" style="margin-top:14px">Requests received during business hours (Mon–Fri, 9–5) are answered with an offer the same day. After-hours requests are answered first thing the next business morning.</p>
-      <div class="nav" style="margin-top:18px"><button class="btn-link" id="restart">Send another vehicle</button><span></span></div>
+      <div class="nav" style="margin-top:16px; justify-content:center"><button class="btn-link" id="restart">Submit another vehicle</button></div>
     </div>
   </div>
 
@@ -632,11 +651,12 @@ function ls(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localSt
 
 // wizard nav
 let step=1, ref=null;
-const panes={1:"p1",2:"p2",3:"p2b",4:"p3",5:"p5"};
-const STEP_NAMES={1:"Your vehicle",2:"Condition",3:"Features",4:"Contact",5:"Review & send"};
+const panes={1:"p1",2:"p2",3:"p2b",4:"pphotos",5:"p3"};
+const STEP_NAMES={1:"Your vehicle",2:"Condition",3:"Features",4:"Photos",5:"Contact"};
 function show(n){
   step=n;
   Object.entries(panes).forEach(([k,id])=>$(id).hidden=(+k!==n));
+  $("p5").hidden=true;
   $("pfill").style.width=(n*20)+"%";
   $("plabel").textContent="Step "+n+" of 5 · "+STEP_NAMES[n];
   if(n>1){
@@ -856,16 +876,114 @@ $("b2").onclick=()=>show(1);
 $("n2").onclick=()=>show(3);
 $("bF").onclick=()=>show(2);
 $("nF").onclick=()=>show(4);
-$("b3").onclick=()=>show(3);
-$("n3").onclick=()=>{
+$("bP").onclick=()=>show(3);
+$("nP").onclick=()=>{ const ok=photos.length>0; $("eP").classList.toggle("show",!ok); if(ok) show(5); };
+$("b3").onclick=()=>show(4);
+
+/* ---- photos ---- */
+const photos=[]; const MAX_PHOTOS=8;
+$("snapbtn").onclick=()=>$("camin").click();
+$("pickbtn").onclick=()=>$("galin").click();
+$("camin").addEventListener("change",e=>addPhotos(e.target.files));
+$("galin").addEventListener("change",e=>addPhotos(e.target.files));
+async function addPhotos(files){
+  for(const f of [...files]){
+    if(photos.length>=MAX_PHOTOS) break;
+    if(!/^image\//.test(f.type) && !/\.(heic|heif|jpe?g|png|webp)$/i.test(f.name||"")) continue;
+    try{
+      const blob=await shrink(f);
+      photos.push({blob, url:URL.createObjectURL(blob)});
+    }catch(err){
+      if(f.size<=6*1024*1024) photos.push({blob:f, url:URL.createObjectURL(f)});
+    }
+  }
+  $("camin").value=""; $("galin").value="";
+  renderThumbs();
+}
+function renderThumbs(){
+  const box=$("thumbs"); box.innerHTML="";
+  photos.forEach((p,i)=>{
+    const d=document.createElement("div"); d.className="thumb";
+    const img=document.createElement("img"); img.src=p.url; img.alt="Photo "+(i+1);
+    const x=document.createElement("button"); x.type="button"; x.textContent="×"; x.setAttribute("aria-label","Remove photo "+(i+1));
+    x.onclick=()=>{ URL.revokeObjectURL(p.url); photos.splice(i,1); renderThumbs(); };
+    d.append(img,x); box.appendChild(d);
+  });
+  if(photos.length) $("eP").classList.remove("show");
+}
+async function shrink(file){
+  let src, iw, ih;
+  const bmp=await createImageBitmap(file).catch(()=>null);
+  if(bmp){ src=bmp; iw=bmp.width; ih=bmp.height; }
+  else {
+    src=await new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=URL.createObjectURL(file); });
+    iw=src.naturalWidth; ih=src.naturalHeight;
+  }
+  if(!iw || !ih) throw new Error("no size");
+  const sc=Math.min(1, 1600/Math.max(iw,ih));
+  const c=document.createElement("canvas"); c.width=Math.max(1,Math.round(iw*sc)); c.height=Math.max(1,Math.round(ih*sc));
+  c.getContext("2d").drawImage(src,0,0,c.width,c.height);
+  const blob=await new Promise(res=>c.toBlob(res,"image/jpeg",0.72));
+  if(!blob) throw new Error("encode failed");
+  return blob;
+}
+
+/* ---- submit ---- */
+$("n3").onclick=async()=>{
   const d=data();
   const digits=(d.phone.match(/\d/g)||[]).length;
   const ok = d.name && digits>=7;
   $("e3").classList.toggle("show",!ok);
   if(!ok) return;
-  ref = "BH-" + Math.random().toString(36).slice(2,6).toUpperCase();
-  toSend();
+  ref = ref || ("BH-" + Math.random().toString(36).slice(2,6).toUpperCase());
+  const btn=$("n3"), old=btn.textContent;
+  btn.textContent="Sending…"; btn.disabled=true; $("p3").classList.add("sending");
+  const sent=await submitRequest();
+  btn.textContent=old; btn.disabled=false; $("p3").classList.remove("sending");
+  if(sent){
+    $("refshow").textContent=ref; $("sendfail").hidden=true;
+    showThanks();
+  } else {
+    prepFallback();
+    $("sendfail").hidden=false;
+    $("sendfail").scrollIntoView({behavior:"smooth",block:"center"});
+  }
 };
+async function submitRequest(){
+  try{
+    const d=data(), sheet=buildSheet();
+    const fd=new FormData();
+    fd.append("_subject","Same-day offer request "+ref+" — "+vehStr());
+    fd.append("_template","box");
+    fd.append("_captcha","false");
+    fd.append("name", d.name);
+    if(d.email) fd.append("email", d.email);
+    fd.append("phone", d.phone);
+    fd.append("request", sheet);
+    photos.forEach((p,i)=>fd.append("attachment"+(i+1), p.blob, "photo-"+(i+1)+".jpg"));
+    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),45000);
+    const r=await fetch("https://formsubmit.co/ajax/bighornautollc@gmail.com",{method:"POST", body:fd, headers:{Accept:"application/json"}, signal:ctl.signal});
+    clearTimeout(t);
+    if(!r.ok) return false;
+    const j=await r.json().catch(()=>null);
+    return !!(j && (j.success===true || j.success==="true"));
+  }catch(e){ return false; }
+}
+function prepFallback(){
+  const sheet=buildSheet();
+  $("smslink").href="sms:+14062007546?&body="+encodeURIComponent(sheet);
+  $("maillink").href="mailto:bighornautollc@gmail.com?subject="+encodeURIComponent("Same-day offer request "+ref+" — "+vehStr())
+    +"&body="+encodeURIComponent(sheet+"\n\nPlease attach 4-6 photos before sending.");
+}
+function showThanks(){
+  step=6;
+  Object.values(panes).forEach(id=>$(id).hidden=true);
+  $("p5").hidden=false;
+  $("pfill").style.width="100%";
+  $("plabel").textContent="Request sent";
+  $("vehecho").textContent="";
+  $("wizard").scrollIntoView({behavior:"smooth",block:"start"});
+}
 
 const COND_LABEL={excellent:"Excellent",good:"Good",fair:"Fair",rough:"Rough"};
 const TITLE_LABEL={clean:"Clean title",loan:"Loan/lease payoff",salvage:"Rebuilt/salvage title"};
@@ -892,30 +1010,15 @@ function buildSheet(){
   lines.push("Phone: "+d.phone + (d.pref?(" ("+d.pref+" preferred)"):""));
   if(d.email) lines.push("Email: "+d.email);
   if(d.notes) lines.push("Notes: "+d.notes);
-  lines.push("(Photos attached)");
+  lines.push("(Photos: "+photos.length+" attached)");
   return lines.join("\n");
 }
-function toSend(){
-  const sheet=buildSheet();
-  $("summary").textContent=sheet;
-  $("refshow").textContent=ref;
-  const enc=encodeURIComponent(sheet);
-  $("smslink").href="sms:+14062007546?&body="+enc;
-  $("maillink").href="mailto:bighornautollc@gmail.com?subject="+encodeURIComponent("Same-day offer request "+ref+" — "+vehStr())
-    +"&body="+encodeURIComponent(sheet+"\n\nPlease attach 4-6 photos before sending.");
-  show(5);
-}
-$("copybtn").onclick=async()=>{
-  const sheet=$("summary").textContent;
-  try{ await navigator.clipboard.writeText(sheet); flashCopied(); }
-  catch(e){
-    const r=document.createRange(); r.selectNodeContents($("summary"));
-    const s=getSelection(); s.removeAllRanges(); s.addRange(r);
-    try{ document.execCommand("copy"); flashCopied(); }catch(_){}
-  }
+$("restart").onclick=()=>{
+  $("askprice").value="";
+  photos.forEach(p=>URL.revokeObjectURL(p.url)); photos.length=0; renderThumbs();
+  $("sendfail").hidden=true; ref=null;
+  show(1);
 };
-function flashCopied(){ const c=$("copied"); c.hidden=false; setTimeout(()=>c.hidden=true,2200); }
-$("restart").onclick=()=>{ $("askprice").value=""; show(1); };
 
 // draft persistence (per-viewer convenience)
 const FIELDS=["year","make","model","trim","miles","vin","cname","cphone","cemail","notes"];
