@@ -441,8 +441,8 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
 
     <!-- STEP 5b: send -->
     <div class="pane" id="p4s" hidden>
-      <h2>One tap to send</h2>
-      <p class="sub">Everything's filled in — pick how you want to send it.</p>
+      <h2>Almost there — send it from your phone</h2>
+      <p class="sub">We couldn't reach our system just now — no problem, these work every time:</p>
       <div style="display:flex; flex-direction:column; gap:10px; max-width:440px">
         <button type="button" class="btn-brand btn-big" id="sharebtn" hidden>Share it — photos attached</button>
         <a class="btn-brand btn-big" id="maillink" href="#" style="display:block; text-align:center; text-decoration:none; border-radius:10px">Email it to Bighorn</a>
@@ -457,8 +457,8 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
     <div class="pane" id="p5" hidden>
       <div class="thanks">
         <span class="vok big" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5L19.5 7"/></svg></span>
-        <h2>Thank you — one last tap.</h2>
-        <p class="sub" style="max-width:54ch; margin-inline:auto">Your message just opened with everything filled in — <b>make sure your photos are attached, then press send</b>. Once it's sent, our buying team will get back to you with your cash offer the <b>same business day</b>. After-hours requests are answered first thing the next business morning.</p>
+        <h2 id="thankshead">Thank you — your request is in.</h2>
+        <p class="sub" id="thankssub" style="max-width:54ch; margin-inline:auto">We've received your vehicle details and photos. Our buying team will review them and get back to you with your cash offer the <b>same business day</b>. Requests received after hours are answered first thing the next business morning.</p>
         <p class="hint" style="margin-top:12px">Reference <span id="refshow" class="money"></span></p>
         <p class="hint" style="margin-top:4px">Questions in the meantime? Call <a href="tel:+14062007546" style="font-weight:700; color:inherit">(406) 200-7546</a> · Mon–Fri 9–5</p>
       </div>
@@ -934,17 +934,39 @@ async function shrink(file){
   return blob;
 }
 
-/* ---- send: the customer's own email or text carries the photos — no services in between ---- */
-$("n3").onclick=()=>{
+/* ---- send: direct submit to the dealership's form inbox; manual share/email/text as backup ---- */
+$("n3").onclick=async()=>{
   const d=data();
   const digits=(d.phone.match(/\d/g)||[]).length;
   const ok = d.name && digits>=7;
   $("e3").classList.toggle("show",!ok);
   if(!ok) return;
   ref = ref || ("BH-" + Math.random().toString(36).slice(2,6).toUpperCase());
-  prepLinks();
-  showSend();
+  const btn=$("n3"), old=btn.textContent;
+  btn.textContent="Sending…"; btn.disabled=true; $("p3").classList.add("sending");
+  const sent=await directSubmit();
+  btn.textContent=old; btn.disabled=false; $("p3").classList.remove("sending");
+  if(sent){ showThanks(); }
+  else { prepLinks(); showSend(); }
 };
+async function directSubmit(){
+  try{
+    const d=data(), sheet=buildSheet();
+    const fd=new FormData();
+    fd.append("_subject","Same-day offer request "+ref+" — "+vehStr());
+    fd.append("name", d.name);
+    if(d.email) fd.append("email", d.email);
+    fd.append("phone", d.phone);
+    fd.append("request", sheet);
+    photos.forEach((p,i)=>fd.append("photo"+(i+1), p.blob, "photo-"+(i+1)+".jpg"));
+    const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),90000);
+    const r=await fetch("https://formspree.io/f/mbgdzpqd",{method:"POST", body:fd, headers:{Accept:"application/json"}, signal:ctl.signal});
+    clearTimeout(t);
+    if(!r.ok) return false;
+    const j=await r.json().catch(()=>null);
+    return !!(j && (j.ok===true || j.next));
+  }catch(e){ return false; }
+}
 $("bS").onclick=()=>show(5);
 function prepLinks(){
   const sheet=buildSheet();
@@ -973,10 +995,10 @@ function showSend(){
 }
 function afterSendTap(shared){
   setTimeout(()=>{
-    if(shared){
-      const s=document.querySelector("#p5 .sub");
-      if(s) s.innerHTML="Your photos and details are on their way. Our buying team will get back to you with your cash offer the <b>same business day</b>. After-hours requests are answered first thing the next business morning.";
-    }
+    $("thankshead").textContent = shared ? "Thank you — your request is in." : "Thank you — one last tap.";
+    $("thankssub").innerHTML = shared
+      ? "Your photos and details are on their way. Our buying team will get back to you with your cash offer the <b>same business day</b>. After-hours requests are answered first thing the next business morning."
+      : "Your message just opened with everything filled in — <b>make sure your photos are attached, then press send</b>. Once it's sent, our buying team will get back to you with your cash offer the <b>same business day</b>.";
     showThanks();
   }, 900);
 }
