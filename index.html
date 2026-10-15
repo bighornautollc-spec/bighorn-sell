@@ -1,3 +1,7 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Bighorn Cash Offers</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;500;600;700;800;900&display=swap">
 <style>
@@ -78,7 +82,15 @@ header{position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background
 .steps span.on{color:var(--brand); border-bottom-color:var(--brand)}
 .steps span.done{color:var(--ink)}
 .pane{padding:24px 24px 28px}
-@media (max-width:560px){ .pane{padding:20px 16px 24px} }
+@media (max-width:560px){
+  .pane{padding:20px 16px 24px}
+  input, select, textarea{font-size:16px !important}
+  .pane h2{font-size:20px}
+  .hero h1{font-size:30px}
+  .nav{flex-wrap:wrap; gap:10px}
+  .nav .btn-brand{flex:1 1 auto; text-align:center}
+}
+html{-webkit-text-size-adjust:100%}
 .pane h2{font-size:22px; text-transform:uppercase; letter-spacing:.02em}
 .pane .sub{margin:4px 0 16px; color:var(--muted); font-size:15px}
 .grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
@@ -274,8 +286,9 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
       <p class="sub">Enter the 17-character VIN and your mileage — we'll identify your vehicle automatically.</p>
       <div class="grid">
         <label class="f full"><span class="lab">VIN</span>
-          <input type="text" id="vin" maxlength="17" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="17 characters — we'll decode it as you type" style="text-transform:uppercase; font-family:ui-monospace, Menlo, Consolas, monospace; letter-spacing:.06em; font-size:18px; padding:13px 12px">
-          <span class="hint" id="vinhint">Find it at the base of the windshield (driver's side), the door-jamb sticker, or on your registration.</span></label>
+          <input type="text" id="vin" maxlength="17" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="Your 17-character VIN" style="text-transform:uppercase; font-family:ui-monospace, Menlo, Consolas, monospace; letter-spacing:.06em; font-size:18px; padding:13px 12px">
+          <span class="hint" id="vinhint">Find it at the base of the windshield (driver's side), the door-jamb sticker, or on your registration.</span>
+          <button class="btn-link" id="novin" type="button" style="padding:4px 0 0; text-align:left; font-weight:700; text-decoration:none; color:var(--brand)">No VIN handy? Enter year, make &amp; model instead →</button></label>
         <label class="f full"><span class="lab">Mileage</span>
           <input type="number" id="miles" inputmode="numeric" min="0" max="500000" placeholder="e.g. 84,000" style="font-size:18px; padding:13px 12px"></label>
       </div>
@@ -291,7 +304,6 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
         </div>
         <div hidden aria-hidden="true">
           <div class="tchips" id="trimchips"></div>
-          <input type="hidden" id="trim">
         </div>
         <div id="confirmrow" hidden aria-hidden="true">
           <label class="check"><input type="checkbox" id="awd"> 4WD or AWD</label>
@@ -305,7 +317,10 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
               <select id="make"></select></label>
             <label class="f"><span class="lab">Model</span>
               <input type="text" id="model" placeholder="F-150, RAV4, Silverado…" autocomplete="off"></label>
+            <label class="f"><span class="lab">Trim <span style="text-transform:none;letter-spacing:0">(optional)</span></span>
+              <input type="text" id="trim" placeholder="XLT, Limited, LT…" autocomplete="off"></label>
           </div>
+          <p class="hint" id="novinnote" hidden style="margin-top:10px">Tip: the VIN lets us confirm your exact equipment — it keeps your offer accurate so nothing changes when you bring it in.</p>
         </div>
         <button class="btn-link" id="editveh" type="button" style="margin-top:8px; padding-left:0">Not your vehicle? Edit</button>
       </div>
@@ -412,8 +427,9 @@ button, .callbtn{transition:transform .12s ease, box-shadow .12s ease, filter .1
           5 · Any damage or wear
         </p>
       </div>
-      <p class="err" id="eP">Please add at least one photo — it's how we price your vehicle.</p>
-      <div class="nav"><button class="btn-link" id="bP">← Back</button><button class="btn-brand" id="nP">Next: contact →</button></div>
+      <p class="hint" style="margin-top:12px"><b>Photos help us make your offer accurate</b> — so nothing changes when you bring it in.</p>
+      <p class="err" id="eP">Please add at least one photo — or tap "Skip for now."</p>
+      <div class="nav"><button class="btn-link" id="bP">← Back</button><span style="display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:flex-end"><button class="btn-link" id="skipP" type="button">Skip for now</button><button class="btn-brand" id="nP">Next: contact →</button></span></div>
     </div>
 
     <div class="pane" id="p3" hidden>
@@ -871,12 +887,19 @@ $("vin").addEventListener("input",()=>{
 $("n1").onclick=()=>{
   const d=data();
   const vinOk = VIN_RE.test(d.vin);
-  const ok = d.year && d.make && d.model && d.miles>=0 && $("miles").value!=="" && vinOk;
+  const ok = d.year && d.make && d.model && d.miles>=0 && $("miles").value!=="";
   $("e1").textContent = (d.vin && !vinOk)
-    ? "That VIN doesn't look right — it should be 17 letters and numbers (no I, O or Q)."
-    : "Please enter the 17-character VIN and your mileage (plus year, make and model if we couldn't read them).";
+    ? "That VIN doesn't look right — it should be 17 letters and numbers (no I, O or Q). Or tap \"No VIN handy?\" to enter the vehicle yourself."
+    : "Please enter your mileage and your vehicle — type the VIN and we'll fill it in, or tap \"No VIN handy?\"";
   $("e1").classList.toggle("show",!ok);
   if(ok) show(2);
+};
+$("novin").onclick=()=>{
+  $("vehcard").hidden=false; $("vinhint").hidden=true; $("novin").hidden=true;
+  $("vok").hidden=true; $("specrow").hidden=true; $("vspec").textContent="";
+  $("vsummary").textContent="Enter your vehicle details";
+  $("manualfields").hidden=false; $("novinnote").hidden=false; $("editveh").hidden=true;
+  setTimeout(()=>$("year").focus(),50);
 };
 $("b2").onclick=()=>show(1);
 $("n2").onclick=()=>show(3);
@@ -884,6 +907,7 @@ $("bF").onclick=()=>show(2);
 $("nF").onclick=()=>show(4);
 $("bP").onclick=()=>show(3);
 $("nP").onclick=()=>{ const ok=photos.length>0; $("eP").classList.toggle("show",!ok); if(ok) show(5); };
+$("skipP").onclick=()=>{ $("eP").classList.remove("show"); show(5); };
 $("b3").onclick=()=>show(4);
 
 /* ---- photos ---- */
@@ -1042,13 +1066,14 @@ function buildSheet(){
   lines.push("Phone: "+d.phone + (d.pref?(" ("+d.pref+" preferred)"):""));
   if(d.email) lines.push("Email: "+d.email);
   if(d.notes) lines.push("Notes: "+d.notes);
-  lines.push("(Photos: "+photos.length+" attached)");
+  lines.push(photos.length ? "(Photos: "+photos.length+" attached)" : "(No photos provided)");
   return lines.join("\n");
 }
 $("restart").onclick=()=>{
   $("askprice").value="";
   photos.forEach(p=>URL.revokeObjectURL(p.url)); photos.length=0; renderThumbs();
   ref=null;
+  $("novin").hidden=false; $("novinnote").hidden=true;
   show(1);
 };
 
